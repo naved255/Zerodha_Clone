@@ -21,7 +21,7 @@ let app = express();
 const conn = mongoose.connect(connString).then(() => { console.log("db connected") });
 
 app.use(cors({
-  origin: ["http://localhost:5174", "http://localhost:5173","https://dashboard-pi-khaki-74.vercel.app"],
+  origin: ["http://localhost:5174", "http://localhost:5173","https://dashboard-pi-khaki-74.vercel.app","https://zerodha-clone-six-sooty.vercel.app","https://zerodha-clone-git-main-naveds-projects-8f831a9a.vercel.app","https://zerodha-clone-9ro3n3jt4-naveds-projects-8f831a9a.vercel.app"],
   credentials: true
 }));
 
