@@ -29,6 +29,8 @@ app.use(urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 
+const isProd = process.env.NODE_ENV === "production";
+
 app.get('/allHoldings', checkAuth, async (req, res) => {
   try {
     let data = await holdingModel.find({ userId: req.user?._id });
@@ -54,8 +56,9 @@ app.post("/logout", checkAuth, (req, res) => {
 
   res.clearCookie("token", {
     httpOnly: true,
-    secure: true,
-    sameSite: "none"
+    secure: isProd,                // true on Render
+    sameSite: isProd ? "none" : "lax",
+    maxAge: 24 * 60 * 60 * 1000
   })
 
   res.status(200).json({ status: true })
@@ -102,7 +105,7 @@ app.post("/newPost", checkAuth, async (req, res) => {
             avg: price
           });
         }
-        fund.openingBalance -= price*qty;
+        fund.openingBalance -= price * qty;
         await fund.save();
         await holding.save();
       }
@@ -222,7 +225,7 @@ app.post("/sell", checkAuth, async (req, res) => {
 
 
       let profit = (price - position.buyPrice) * qty;
-      let usedMargin = position.buyPrice * qty*0.2;
+      let usedMargin = position.buyPrice * qty * 0.2;
       fund.availableMargin += usedMargin + profit;
       fund.usedMargin -= usedMargin;
       position.qty -= qty;
@@ -236,13 +239,13 @@ app.post("/sell", checkAuth, async (req, res) => {
 
     }
 
-        const order = await orderModel.create({
+    const order = await orderModel.create({
       userId: req.user._id,
       product,
       name,
       qty,
       price,
-      mode:"SELL"
+      mode: "SELL"
     });
 
     res.status(200).json({ status: true, message: "sell succesfull" });
@@ -268,8 +271,10 @@ app.post('/singup', async (req, res) => {
     console.log("fund created", Fund);
     const token = createSecretToken(user._id);
     res.cookie("token", token, {
-      withCredentials: true,
-      httpOnly: false,
+      httpOnly: true,
+      secure: isProd,                // true on Render
+      sameSite: isProd ? "none" : "lax",
+      maxAge: 24 * 60 * 60 * 1000
     });
 
     res
@@ -298,9 +303,10 @@ app.post('/login', async (req, res) => {
     }
     const token = createSecretToken(user._id);
     res.cookie("token", token, {
-    withCredentials:true,
-    httpOnly: true,
-    secure: true,
+      httpOnly: true,
+      secure: isProd,                // true on Render
+      sameSite: isProd ? "none" : "lax",
+      maxAge: 24 * 60 * 60 * 1000
     });
     res.status(201).json({ message: "User logged in successfully", success: true });
 
