@@ -54,8 +54,8 @@ app.post("/logout", checkAuth, (req, res) => {
 
   res.clearCookie("token", {
     httpOnly: true,
-    secure: false,
-    sameSite: "lax"
+    secure: true,
+    sameSite: "none"
   })
 
   res.status(200).json({ status: true })
@@ -298,8 +298,9 @@ app.post('/login', async (req, res) => {
     }
     const token = createSecretToken(user._id);
     res.cookie("token", token, {
-      withCredentials: true,
-      httpOnly: false,
+    withCredentials:true,
+    httpOnly: true,
+    secure: true,
     });
     res.status(201).json({ message: "User logged in successfully", success: true });
 

@@ -15,7 +15,7 @@ const Holdings = () => {
   useEffect(() => {
     async function fetchHoldings() {
       const res = await axios.get(
-        'http://localhost:3000/allHoldings',
+        'https://zerodha-backend-tvro.onrender.com/allHoldings',
         { withCredentials: true }
       )
       setHoldings(res.data)

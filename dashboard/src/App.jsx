@@ -12,7 +12,7 @@ function App() {
   useEffect(() => {
     async function check_auth() {
       try {
-        const res = await axios.get("http://localhost:3000/verify", {
+        const res = await axios.get("https://zerodha-backend-tvro.onrender.com/verify", {
           withCredentials: true,
         });
         setAuth(res.data.status);

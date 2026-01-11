@@ -9,7 +9,7 @@ const Navbar = () => {
   async function handleLogOut() {
     try {
       const logOut = await axios.post(
-        "http://localhost:3000/logout",
+        "https://zerodha-backend-tvro.onrender.com/logout",
         {},
         { withCredentials: true }
       );

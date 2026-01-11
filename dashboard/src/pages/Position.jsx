@@ -14,7 +14,7 @@ const Position = () => {
   useEffect(() => {
     async function fetchPositions() {
       const res = await axios.get(
-        'http://localhost:3000/allPositions',
+        'https://zerodha-backend-tvro.onrender.com/allPositions',
         { withCredentials: true }
       )
       setPositions(res.data)

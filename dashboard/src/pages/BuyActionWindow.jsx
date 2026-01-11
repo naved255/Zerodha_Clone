@@ -58,7 +58,7 @@ const BuyActionWindow = ({ uid }) => {
 
  
      let order =  await axios.post(
-        "http://localhost:3000/newPost",
+        "https://zerodha-backend-tvro.onrender.com/newPost",
         data,
         { withCredentials: true }
       );

@@ -59,19 +59,19 @@ const Dashboard = () => {
   useEffect(() => {
     async function checkAuth() {
       try {
-        const verifyRes = await axios.get("http://localhost:3000/verify", {
+        const verifyRes = await axios.get("https://zerodha-backend-tvro.onrender.com/verify", {
           withCredentials: true,
         });
 
         setAuth(verifyRes.data.status);
 
         const dashboardRes = await axios.get(
-          "http://localhost:3000/dashboard",
+          "https://zerodha-backend-tvro.onrender.com/dashboard",
           { withCredentials: true }
         );
 
         const holdingsRes = await axios.get(
-          "http://localhost:3000/allHoldings",
+          "https://zerodha-backend-tvro.onrender.com/allHoldings",
           { withCredentials: true }
         );
 

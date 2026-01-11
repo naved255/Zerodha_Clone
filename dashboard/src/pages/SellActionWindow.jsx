@@ -22,7 +22,7 @@ const SellActionWindow = ({ uid }) => {
             }
             console.log(data);
 
-            let res = await axios.post("http://localhost:3000/sell", data, {withCredentials:true});
+            let res = await axios.post("https://zerodha-backend-tvro.onrender.com/sell", data, {withCredentials:true});
 
             console.log(res.data?.status);
             closeSellWindow();

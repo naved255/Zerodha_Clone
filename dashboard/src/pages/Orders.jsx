@@ -27,7 +27,7 @@ const Orders = () => {
     async function fetchOrders() {
       try {
         setloading(true);
-        const res = await axios.get("http://localhost:3000/orders", {
+        const res = await axios.get("https://zerodha-backend-tvro.onrender.com/orders", {
           withCredentials: true,
         });
         if (res.data?.status) {
