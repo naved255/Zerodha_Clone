@@ -100,7 +100,7 @@ const BuyActionWindow = ({ uid }) => {
   }
 
   const validate = () => {
-    if (stockQuantity <= 0 || stockPrice <= 0) return true;
+    if (stockQuantity < 0 || stockPrice < 0) return true;
 
     if (product === "CNC") {
       return stockQuantity * stockPrice > availableBalance;

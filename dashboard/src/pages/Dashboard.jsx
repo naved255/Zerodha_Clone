@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import Login from "./Login";
-import { priceFunction } from "../data";
 import { GeneralContext } from "./GeneralContext";
 
 const Dashboard = () => {
@@ -12,7 +11,17 @@ const Dashboard = () => {
     setavailableBalance,
     setusedMargin,
     setavailableMargin,
+    list,
+    setlist
   } = useContext(GeneralContext);
+
+
+    const priceFunction = (stockName) => {
+      const stock = list.find(
+        item => item.name.toLowerCase() === stockName.toLowerCase()
+      );
+      return stock ? { price: stock.price, prevClose: stock.prevClose } : { price: 0, prevClose: 0 };
+    };
 
   const [auth, setAuth] = useState(null);
   const [hold, setHold] = useState({

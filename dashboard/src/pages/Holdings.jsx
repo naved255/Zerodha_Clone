@@ -29,10 +29,13 @@ const Holdings = () => {
         { withCredentials: true }
       )
       setHoldings(res.data)
-      console.log("holding")
+
+
     }
     fetchHoldings()
-  }, [holdings,list])
+  }, [holdings, list])
+
+
 
   const labels = holdings.map(item => item.name)
 

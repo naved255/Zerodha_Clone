@@ -2,13 +2,21 @@ import React, { useState, useEffect } from 'react'
 import { useContext } from 'react';
 import { GeneralContext } from './GeneralContext';
 import axios from 'axios'
-import { priceFunction } from '../data';
+
 
 const SellActionWindow = ({ uid }) => {
 
-    const {openSellWindow, closeSellWindow} = useContext(GeneralContext);
+    const { openSellWindow, closeSellWindow, list , setlist } = useContext(GeneralContext);
     const [stockQuantity, setstockQuantity] = useState(1);
     const [product, setproduct] = useState("CNC");
+
+
+    const priceFunction = (stockName) => {
+        const stock = list.find(
+            item => item.name.toLowerCase() === stockName.toLowerCase()
+        );
+        return stock ? { price: stock.price, prevClose: stock.prevClose } : { price: 0, prevClose: 0 };
+    };
 
 
     const handleSellClick = async () => {
@@ -22,7 +30,7 @@ const SellActionWindow = ({ uid }) => {
             }
             console.log(data);
 
-            let res = await axios.post("https://zerodha-backend-tvro.onrender.com/sell", data, {withCredentials:true});
+            let res = await axios.post("https://zerodha-backend-tvro.onrender.com/sell", data, { withCredentials: true });
 
             console.log(res.data?.status);
             closeSellWindow();

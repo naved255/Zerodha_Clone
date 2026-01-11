@@ -106,6 +106,7 @@ app.post("/newPost", checkAuth, async (req, res) => {
           });
         }
         fund.openingBalance -= price * qty;
+        fund.availableMargin -= price * qty;
         await fund.save();
         await holding.save();
       }
