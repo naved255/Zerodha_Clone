@@ -39,7 +39,7 @@ const Signup = () => {
             }
 
             console.log("Signup Data:", formData);
-
+            alert(`${res.data.message}`);
 
 
         } catch (err) {
