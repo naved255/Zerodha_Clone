@@ -273,7 +273,7 @@ app.post('/singup', async (req, res) => {
     console.log(email, password, username);
     const existingUser = await userSingupModel.findOne({ email });
     if (existingUser) {
-      return res.json({ message: "User already exists" });
+      return res.json({success:false, message: "User already exists" });
     }
     const user = await userSingupModel.create({ email, password, username });
     const Fund = await fundModel.create({ userId: user._id, openingBalance: fund, availableMargin: fund, usedMargin: 0 });

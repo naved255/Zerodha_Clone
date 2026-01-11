@@ -39,7 +39,7 @@ const Signup = () => {
             }
 
             console.log("Signup Data:", formData);
-            alert(`${res.data.message}`);
+            setError(res.data.message);
 
 
         } catch (err) {
@@ -52,6 +52,8 @@ const Signup = () => {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
             <div className="w-full max-w-md bg-white p-6 sm:p-8 rounded-lg shadow-md">
+
+                {error && <p className="text-red-400 text-center">{error}</p>}
 
                 {/* Header */}
                 <div className="text-center mb-6">
