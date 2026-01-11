@@ -21,7 +21,7 @@ let app = express();
 const conn = mongoose.connect(connString).then(() => { console.log("db connected") });
 
 app.use(cors({
-  origin: ["http://localhost:5174", "http://localhost:5173"],
+  origin: ["http://localhost:5174", "http://localhost:5173","https://dashboard-pi-khaki-74.vercel.app/"],
   credentials: true
 }));
 
