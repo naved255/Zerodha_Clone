@@ -10,7 +10,7 @@ const Signup = () => {
         username: "",
         email: "",
         password: "",
-        fund:""
+        fund:5000
     });
 
     const [loading, setLoading] = useState(false);
@@ -129,7 +129,7 @@ const Signup = () => {
                             Starting Balance
                         </label>
                         <select required className="w-full border border-gray-300 rounded-md px-3 py-2
-                         focus:outline-none focus:ring-2 focus:ring-blue-500" onChange={handleChange}  name="fund" id="fund">
+                         focus:outline-none focus:ring-2 focus:ring-blue-500" onChange={handleChange} value={formData.fund}  name="fund" id="fund">
                             <option value="5000">5000</option>
                             <option value="50000">50000</option>
                             <option value="100000">100000</option>
