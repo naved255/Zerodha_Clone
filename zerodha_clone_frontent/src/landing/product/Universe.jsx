@@ -1,7 +1,14 @@
 import React from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 
 const Univers = () => {
+
+  const navigate = useNavigate();
+
+  function handleClick() {
+    navigate("/signup")
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
 
@@ -98,7 +105,7 @@ const Univers = () => {
 
       {/* CTA Button */}
       <div className="mt-12">
-        <button className="px-8 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+        <button onClick={handleClick} className="px-8 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
           Sign up for free
         </button>
       </div>

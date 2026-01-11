@@ -1,6 +1,13 @@
 import React from 'react'
+import {useNavigate} from 'react-router-dom'
 
 const Hero = () => {
+
+  const navigate = useNavigate();
+
+  function handleClick() {
+    navigate("/signup")
+  }
   return (
     <section className="max-w-7xl mx-auto px-4 py-6 sm:py-10 mb-32 sm:mb-40">
       <div className="flex flex-col items-center text-center">
@@ -25,6 +32,7 @@ const Hero = () => {
           </p>
 
           <button
+          onClick={handleClick}
             className="
               mt-4
               w-full
