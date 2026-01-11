@@ -1,16 +1,26 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 import { VerticalChartBar } from './VerticalChart'
-import { priceFunction } from '../data.js'
+import { GeneralContext } from './GeneralContext';
+
 
 const Holdings = () => {
-  const [holdings, setHoldings] = useState([])
+  const [holdings, setHoldings] = useState([]);
+
+  const { list, setlist } = useContext(GeneralContext);
 
   const getColor = (value) => {
     if (value > 0) return 'text-green-600'
     if (value < 0) return 'text-red-600'
     return 'text-gray-500'
   }
+
+  const priceFunction = (stockName) => {
+    const stock = list.find(
+      item => item.name.toLowerCase() === stockName.toLowerCase()
+    );
+    return stock ? { price: stock.price, prevClose: stock.prevClose } : { price: 0, prevClose: 0 };
+  };
 
   useEffect(() => {
     async function fetchHoldings() {

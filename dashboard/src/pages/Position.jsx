@@ -5,11 +5,20 @@ import { priceFunction } from '../data'
 const Position = () => {
   const [positions, setPositions] = useState([])
 
+  const { list, setlist } = useContext(GeneralContext);
+
   const getColor = (value) => {
     if (value > 0) return 'text-green-600'
     if (value < 0) return 'text-red-600'
     return 'text-gray-500'
   }
+
+  const priceFunction = (stockName) => {
+    const stock = list.find(
+      item => item.name.toLowerCase() === stockName.toLowerCase()
+    );
+    return stock ? { price: stock.price, prevClose: stock.prevClose } : { price: 0, prevClose: 0 };
+  };
 
   useEffect(() => {
     async function fetchPositions() {

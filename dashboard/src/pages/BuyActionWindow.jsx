@@ -7,7 +7,7 @@ import { NavLink } from 'react-router-dom'
 
 const BuyActionWindow = ({ uid }) => {
 
-  const { setusedMargin, setavailableMargin, availableMargin } = useContext(GeneralContext);
+  const { setusedMargin, setavailableMargin, availableMargin, availableBalance } = useContext(GeneralContext);
 
   const { openBuyWindow, closeBuyWindow } = useContext(GeneralContext);
   const [stockQuantity, setstockQuantity] = useState(1);
@@ -43,7 +43,7 @@ const BuyActionWindow = ({ uid }) => {
 
   useEffect(() => {
     calculateMargin();
-  }, [stockQuantity, stockPrice]);
+  }, [stockQuantity, stockPrice, product]);
 
   const handleBuyClick = async () => {
     try {
@@ -65,10 +65,12 @@ const BuyActionWindow = ({ uid }) => {
 
       if(order.data?.lowBalance) {
         alert("Your balance is low")
+        return
       }
 
       if(order.data?.lowMargin) {
         alert("Your margine is low");
+        return;
       }
 
       setusedMargin(prev => prev + margin);
@@ -86,6 +88,21 @@ const BuyActionWindow = ({ uid }) => {
   const handleCancleClick = () => {
     closeBuyWindow();
   }
+
+const validate = () => {
+  if (stockQuantity <= 0 || stockPrice <= 0) return true;
+
+  if (product === "CNC") {
+    return availableBalance < stockQuantity * stockPrice;
+  }
+
+  if (product === "MIS") {
+    return availableMargin < margin;
+  }
+
+  return false;
+};
+
 
   return (
     <div
@@ -137,10 +154,11 @@ const BuyActionWindow = ({ uid }) => {
 
 
       <div className="flex items-center justify-between border-t border-gray-200 px-4 py-3">
+        { validate() && <p className='text-red-500 text-xs'>not enough balance available</p>}
         {product === "MIS" ? (
           <span className="text-sm text-gray-600">
             Margin required ₹{numberConversion(margin)}
-            {availableMargin < margin && <p className='text-red-500 text-xs'>not enough margin available</p>}
+            {validate() && <p className='text-red-500 text-xs'>not enough margin available</p>}
           </span>
 
         ) : (<></>)}
@@ -148,7 +166,7 @@ const BuyActionWindow = ({ uid }) => {
         <div className="flex gap-2">
           <button
             onClick={handleBuyClick}
-            disabled={availableMargin < margin}
+            disabled={ validate() }
             className="rounded bg-blue-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-blue-700 active:scale-95"
           >
             Buy
