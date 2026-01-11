@@ -94,7 +94,7 @@ const Login = ({auth, setAuth}) => {
                     Login
                 </button>
 
-                <Link className="text-blue-500 text-xs py-1.5" to={"http://localhost:5173/signup"}>Create account</Link>
+                <Link className="text-blue-500 text-xs py-1.5" to={"https://zerodha-clone-2kp7wh131-naveds-projects-8f831a9a.vercel.app/signup"}>Create account</Link>
             </form>
         </div>
     );
