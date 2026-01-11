@@ -10,8 +10,8 @@ This repository contains a **Zerodha Clone** project including:
 
 ## 🌐 Live Demo
 
-- **Frontend (Zerodha UI Clone):** [https://zerodha-clone-lfncnhzdn-naveds-projects-8f831a9a.vercel.app](https://zerodha-clone-lfncnhzdn-naveds-projects-8f831a9a.vercel.app)  
-- **Dashboard (Trading Dashboard):** [https://dashboard-git-main-naveds-projects-8f831a9a.vercel.app](https://dashboard-git-main-naveds-projects-8f831a9a.vercel.app)
+- **Frontend (Zerodha UI Clone):** [https://zerodha-clone-six-sooty.vercel.app](https://zerodha-clone-six-sooty.vercel.app) 
+- **Dashboard (Trading Dashboard):** [https://dashboard-pi-khaki-74.vercel.app/](https://dashboard-pi-khaki-74.vercel.app)
 
 ---
 
