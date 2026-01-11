@@ -32,10 +32,10 @@ const Signup = () => {
 
         try {
 
-            const res = await axios.post("http://localhost:3000/singup", formData, {withCredentials:true});
+            const res = await axios.post("https://zerodha-backend-tvro.onrender.com/singup", formData, {withCredentials:true});
             console.log(res.data)
             if (res.data.success) {
-                window.location.href = "http://localhost:5174/"
+                window.location.href = "https://dashboard-pi-khaki-74.vercel.app/"
             }
 
             console.log("Signup Data:", formData);
