@@ -21,7 +21,7 @@ let app = express();
 const conn = mongoose.connect(connString).then(() => { console.log("db connected") });
 
 app.use(cors({
-  origin: ["http://localhost:5174", "http://localhost:5173","https://dashboard-pi-khaki-74.vercel.app","https://zerodha-clone-six-sooty.vercel.app","https://zerodha-clone-git-main-naveds-projects-8f831a9a.vercel.app","https://zerodha-clone-9ro3n3jt4-naveds-projects-8f831a9a.vercel.app"],
+  origin: ["http://localhost:5174", "http://localhost:5173", "https://dashboard-pi-khaki-74.vercel.app", "https://zerodha-clone-six-sooty.vercel.app", "https://zerodha-clone-git-main-naveds-projects-8f831a9a.vercel.app", "https://zerodha-clone-9ro3n3jt4-naveds-projects-8f831a9a.vercel.app"],
   credentials: true
 }));
 
@@ -88,7 +88,7 @@ app.post("/newPost", checkAuth, async (req, res) => {
         name
       });
 
-      if (fund.openingBalance < price) {
+      if (fund.openingBalance < price * qty) {
         return res.json({ lowBalance: true });
       }
 
@@ -120,7 +120,9 @@ app.post("/newPost", checkAuth, async (req, res) => {
         status: "OPEN"
       });
 
-      if (fund.availableMargin < price * qty * 0.2) {
+      const requiredMargin = price * qty * 0.2;
+
+      if (fund.availableMargin < requiredMargin) {
         return res.json({ lowMargin: true });
       }
 
@@ -139,8 +141,8 @@ app.post("/newPost", checkAuth, async (req, res) => {
             buyPrice: price
           });
         }
-        fund.availableMargin -= margin;
-        fund.usedMargin += margin;
+        fund.availableMargin -= requiredMargin;
+        fund.usedMargin += requiredMargin;
 
         await fund.save();
 
@@ -160,7 +162,13 @@ app.post("/newPost", checkAuth, async (req, res) => {
     });
 
 
-    res.json({ success: true, message: "Order placed successfully" });
+    res.json({
+      success: true,
+      availableMargin: fund.availableMargin,
+      usedMargin: fund.usedMargin,
+      availableBalance: fund.availableBalance
+    });
+
 
   } catch (err) {
     console.error(err);

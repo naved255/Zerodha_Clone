@@ -8,17 +8,21 @@ import { NavLink } from 'react-router-dom'
 const BuyActionWindow = ({ uid }) => {
 
   const { setusedMargin, setavailableMargin, availableMargin, availableBalance } = useContext(GeneralContext);
-
   const { openBuyWindow, closeBuyWindow } = useContext(GeneralContext);
   const [stockQuantity, setstockQuantity] = useState(1);
   const [stockPrice, setstockPrice] = useState(0);
   const [product, setproduct] = useState("CNC");
   const [margin, setmargin] = useState(0);
+  const [placeOrder, setplaceOrder] = useState(false);
 
   const calculateMargin = () => {
-    let margin = stockQuantity * stockPrice * 0.2;
-    setmargin(margin);
-  }
+    if (product === "MIS") {
+      setmargin(stockQuantity * stockPrice * 0.2);
+    } else {
+      setmargin(0);
+    }
+  };
+
 
   function numberConversion(number) {
 
@@ -46,7 +50,9 @@ const BuyActionWindow = ({ uid }) => {
   }, [stockQuantity, stockPrice, product]);
 
   const handleBuyClick = async () => {
+
     try {
+      
       const data = {
         product,
         name: uid,
@@ -56,31 +62,35 @@ const BuyActionWindow = ({ uid }) => {
         margin: margin
       };
 
- 
-     let order =  await axios.post(
+      setplaceOrder(true);
+
+      let order = await axios.post(
         "https://zerodha-backend-tvro.onrender.com/newPost",
         data,
         { withCredentials: true }
       );
 
-      if(order.data?.lowBalance) {
+      if (order.data?.lowBalance) {
         alert("Your balance is low")
         return
       }
 
-      if(order.data?.lowMargin) {
+      if (order.data?.lowMargin) {
         alert("Your margine is low");
         return;
       }
 
-      setusedMargin(prev => prev + margin);
-      setavailableMargin(prev => prev - margin);
+      setusedMargin(order.data?.usedMargin);
+      setavailableMargin(order.data?.availableMargin);
 
       closeBuyWindow();
 
     } catch (error) {
       console.log(error.response?.data || error.message);
+      setplaceOrder(false);
       alert("Order failed or insufficient margin");
+    }finally{
+      setplaceOrder(false);
     }
   };
 
@@ -89,19 +99,19 @@ const BuyActionWindow = ({ uid }) => {
     closeBuyWindow();
   }
 
-const validate = () => {
-  if (stockQuantity <= 0 || stockPrice <= 0) return true;
+  const validate = () => {
+    if (stockQuantity <= 0 || stockPrice <= 0) return true;
 
-  if (product === "CNC") {
-    return availableBalance < stockQuantity * stockPrice;
-  }
+    if (product === "CNC") {
+      return stockQuantity * stockPrice > availableBalance;
+    }
 
-  if (product === "MIS") {
-    return availableMargin < margin;
-  }
+    if (product === "MIS") {
+      return margin > availableMargin;
+    }
 
-  return false;
-};
+    return false;
+  };
 
 
   return (
@@ -154,7 +164,14 @@ const validate = () => {
 
 
       <div className="flex items-center justify-between border-t border-gray-200 px-4 py-3">
-        { validate() && <p className='text-red-500 text-xs'>not enough balance available</p>}
+        {validate() && (
+          <p className="text-red-500 text-xs">
+            {product === "MIS"
+              ? "Not enough margin available"
+              : "Not enough balance available"}
+          </p>
+        )}
+
         {product === "MIS" ? (
           <span className="text-sm text-gray-600">
             Margin required ₹{numberConversion(margin)}
@@ -166,7 +183,7 @@ const validate = () => {
         <div className="flex gap-2">
           <button
             onClick={handleBuyClick}
-            disabled={ validate() }
+            disabled={validate() || placeOrder}
             className="rounded bg-blue-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-blue-700 active:scale-95"
           >
             Buy
