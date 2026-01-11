@@ -52,21 +52,24 @@ const BuyActionWindow = ({ uid }) => {
         name: uid,
         qty: stockQuantity,
         price: stockPrice,
-        mode: "BUY"
+        mode: "BUY",
+        margin: margin
       };
 
  
-      await axios.post(
+     let order =  await axios.post(
         "http://localhost:3000/newPost",
         data,
         { withCredentials: true }
       );
 
-      const res = await axios.post(
-        "http://localhost:3000/fundUpdate",
-        { margin },
-        { withCredentials: true }
-      );
+      if(order.data?.lowBalance) {
+        alert("Your balance is low")
+      }
+
+      if(order.data?.lowMargin) {
+        alert("Your margine is low");
+      }
 
       setusedMargin(prev => prev + margin);
       setavailableMargin(prev => prev - margin);

@@ -7,9 +7,10 @@ const Signup = () => {
 
 
     const [formData, setFormData] = useState({
-        name: "",
+        username: "",
         email: "",
         password: "",
+        fund:5000
     });
 
     const [loading, setLoading] = useState(false);
@@ -31,8 +32,8 @@ const Signup = () => {
 
         try {
 
-            const res = await axios.post("http://localhost:3000/signup", formData);
-
+            const res = await axios.post("http://localhost:3000/singup", formData, {withCredentials:true});
+            console.log(res.data)
             if (res.data.success) {
                 window.location.href = "http://localhost:5174/"
             }
@@ -79,7 +80,7 @@ const Signup = () => {
                         </label>
                         <input
                             type="text"
-                            name="name"
+                            name="username"
                             required
                             value={formData.name}
                             onChange={handleChange}

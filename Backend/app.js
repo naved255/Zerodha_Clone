@@ -49,78 +49,34 @@ app.get('/allPositions', checkAuth, async (req, res) => {
   }
 })
 
-app.post("/fundUpdate", checkAuth, async (req, res) => {
-  try {
-    const { margin } = req.body;
 
-    const fund = await fundModel.findOne({ userId: req.user._id });
-
-    if (!fund) {
-      return res.status(404).json({ status: false, message: "Fund not found" });
-    }
-
-
-    if (fund.availableMargin < margin) {
-      return res.status(400).json({
-        status: false,
-        message: "Insufficient margin"
-      });
-    }
-
-  
-    fund.availableMargin -= margin;
-    fund.usedMargin += margin;
-
-    await fund.save();
-
-    res.status(200).json({
-      status: true,
-      message: "Fund updated successfully",
-      fund
-    });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ status: false, message: "Server error" });
-  }
-});
-
-app.post("/logout", checkAuth,(req, res) => {
+app.post("/logout", checkAuth, (req, res) => {
 
   res.clearCookie("token", {
-    httpOnly:true,
-    secure:false,
-    sameSite:"lax"
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax"
   })
 
-  res.status(200).json({status:true})
+  res.status(200).json({ status: true })
 })
 
 app.get("/orders", checkAuth, async (req, res) => {
   try {
-    let order = await orderModel.find({userId:req.user?._id});
-    console.log("order recived ",order);
-    res.status(200).json({status:true, message:"order send", order:order});
+    let order = await orderModel.find({ userId: req.user?._id });
+    console.log("order recived ", order);
+    res.status(200).json({ status: true, message: "order send", order: order });
   } catch (error) {
     console.log(error);
-    res.status(500).json({status:false, message:"Something went wrong"});
+    res.status(500).json({ status: false, message: "Something went wrong" });
   }
 })
 
 app.post("/newPost", checkAuth, async (req, res) => {
   try {
 
-    const { name, product, qty, price, mode } = req.body;
-
-
-    const order = await orderModel.create({
-      userId: req.user._id,
-      product,
-      name,
-      qty,
-      price,
-      mode
-    });
+    const { name, product, qty, price, mode, margin } = req.body;
+    let fund = await fundModel.findOne({ userId: req.user?._id });
 
 
     if (product === "CNC") {
@@ -128,6 +84,10 @@ app.post("/newPost", checkAuth, async (req, res) => {
         userId: req.user._id,
         name
       });
+
+      if (fund.openingBalance < price) {
+        return res.json({ lowBalance: true });
+      }
 
       if (mode === "BUY") {
         if (holding) {
@@ -142,17 +102,11 @@ app.post("/newPost", checkAuth, async (req, res) => {
             avg: price
           });
         }
+        fund.openingBalance -= price*qty;
+        await fund.save();
         await holding.save();
       }
 
-      if (mode === "SELL" && holding) {
-        holding.qty -= qty;
-        if (holding.qty <= 0) {
-          await holding.deleteOne();
-        } else {
-          await holding.save();
-        }
-      }
     }
 
     else {
@@ -162,6 +116,10 @@ app.post("/newPost", checkAuth, async (req, res) => {
         product,
         status: "OPEN"
       });
+
+      if (fund.availableMargin < price * qty * 0.2) {
+        return res.json({ lowMargin: true });
+      }
 
       if (mode === "BUY") {
         if (position) {
@@ -178,22 +136,26 @@ app.post("/newPost", checkAuth, async (req, res) => {
             buyPrice: price
           });
         }
+        fund.availableMargin -= margin;
+        fund.usedMargin += margin;
+
+        await fund.save();
+
         await position.save();
       }
 
-      if (mode === "SELL") {
-        if (!position) {
-          return res.status(400).json({ error: "No open position to sell" });
-        }
-
-        position.qty -= qty;
-        if (position.qty <= 0) {
-          position.status = "CLOSED";
-          position.sellPrice = price;
-        }
-        await position.save();
-      }
     }
+
+
+    const order = await orderModel.create({
+      userId: req.user._id,
+      product,
+      name,
+      qty,
+      price,
+      mode
+    });
+
 
     res.json({ success: true, message: "Order placed successfully" });
 
@@ -211,6 +173,85 @@ app.get('/dashboard', checkAuth, async (req, res) => {
     console.log(error);
     res.status(401).json({ success: false });
   }
+})
+
+app.post("/sell", checkAuth, async (req, res) => {
+
+  try {
+
+    const { name, qty, price, product } = req.body;
+
+    let fund = await fundModel.findOne({ userId: req.user._id });
+
+    if (product === "CNC") {
+
+      let holding = await holdingModel.findOne({
+        userId: req.user._id,
+        name
+      });
+
+
+      let sellValue = price * qty;
+
+      fund.openingBalance += sellValue;
+
+      holding.qty -= qty;
+
+      await fund.save();
+
+      if (holding.qty <= 0) {
+        await holding.deleteOne();
+      } else {
+        await holding.save();
+      }
+
+    }
+
+    if (product === 'MIS') {
+
+      let position = await positionModel.findOne({
+        userId: req.user._id,
+        name,
+        product,
+        status: "OPEN"
+      });
+
+      if (!position) {
+        return res.status(400).json({ error: "No open position to sell" });
+      }
+
+
+      let profit = (price - position.buyPrice) * qty;
+      let usedMargin = position.buyPrice * qty*0.2;
+      fund.availableMargin += usedMargin + profit;
+      fund.usedMargin -= usedMargin;
+      position.qty -= qty;
+
+      if (position.qty <= 0) {
+        position.status = "CLOSED";
+        position.sellPrice = price;
+      }
+      await position.save();
+      await fund.save();
+
+    }
+
+        const order = await orderModel.create({
+      userId: req.user._id,
+      product,
+      name,
+      qty,
+      price,
+      mode:"SELL"
+    });
+
+    res.status(200).json({ status: true, message: "sell succesfull" });
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ status: false, message: "sell Unseccesfull" });
+  }
+
 })
 
 app.post('/singup', async (req, res) => {
@@ -237,6 +278,7 @@ app.post('/singup', async (req, res) => {
 
   } catch (error) {
     console.error(error);
+    res.status(500).json({ message: "user signed failed", success: false })
   }
 })
 

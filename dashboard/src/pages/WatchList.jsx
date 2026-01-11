@@ -19,7 +19,7 @@ const WatchList = ({ stock }) => {
       onClick={() => setVisible(!visible)} // 👈 mobile support
       className="
         flex items-center justify-between
-        px-2 py-2
+        px-2 py-2 h-14
         border-b border-gray-200
         cursor-pointer
         hover:bg-gray-50

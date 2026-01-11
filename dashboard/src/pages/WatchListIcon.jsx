@@ -6,7 +6,7 @@ import { useContext } from 'react'
 
 const WatchListIcon = ({uid}) => {
 
-    const{openBuyWindow} = useContext(GeneralContext);
+    const{openBuyWindow, openSellWindow} = useContext(GeneralContext);
 
   return (
     <span>
@@ -15,7 +15,7 @@ const WatchListIcon = ({uid}) => {
                 <button className='px-1 py-0.5 bg-blue-600 rounded-md text-white font-bold'>Buy</button>
             </Tooltip>
             <Tooltip title={"Sell (S)"} placement='top' arrow TransitionComponent={Grow}>
-                <button className='px-1 py-0.5 bg-red-600 rounded-md text-white font-bold'>Sell</button>
+                <button className='px-1 py-0.5 bg-red-600 rounded-md text-white font-bold' onClick={()=>openSellWindow(uid)}>Sell</button>
             </Tooltip>
             <Tooltip title={"Analytics (A)"} placement='top' arrow TransitionComponent={Grow}>
                 <BarChartOutlined className='border border-gray-300 rounded-md p-1'/>

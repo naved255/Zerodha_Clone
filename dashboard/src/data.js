@@ -72,6 +72,8 @@ export const watchlist = [
 ];
 
 
+
+
 // holdings
 export const holdings = [
   {
@@ -189,7 +191,7 @@ export const priceFunction = (stockName) => {
   const stock = watchlist.find(
     item => item.name.toLowerCase() === stockName.toLowerCase()
   );
-  return stock ? {price:stock.price, prevClose:stock.prevClose} : {price:0, prevClose:0};
+  return stock ? { price: stock.price, prevClose: stock.prevClose } : { price: 0, prevClose: 0 };
 };
 
 

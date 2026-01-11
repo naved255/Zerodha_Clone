@@ -1,10 +1,15 @@
 import { createContext } from "react";
 import React, {useState} from "react";
 import BuyActionWindow from "./BuyActionWindow";
+import SellActionWindow from "./SellActionWindow";
+import { watchlist } from "../data";
 
 export const GeneralContext = React.createContext({
     openBuyWindow: () => {},
     closeBuyWindow: () => {},
+
+    openSellWindow: () => {},
+    closeSellWindow: () => {},
 
     availableBalance: 0,
     setavailableBalance: () => {},
@@ -20,10 +25,12 @@ export const GeneralContext = React.createContext({
 const GeneralProvider = ({children}) => {
 
     const [isBuyWindowOpen, setisBuyWindowOpen] = useState(false);
+    const [isSellWindowOpen, setisSellWindowOpen] = useState(false);
     const [selectedStockUid, setselectedStockUid] = useState("");
     const [availableBalance, setavailableBalance] = useState(0);
     const [usedMargin, setusedMargin] = useState(0);
     const [availableMargin, setavailableMargin] = useState(0);
+    const [list, setlist] = useState(watchlist);
 
     const handleOpenBuyWindow = (uid) => {
         setisBuyWindowOpen(!isBuyWindowOpen);
@@ -35,6 +42,18 @@ const GeneralProvider = ({children}) => {
         setselectedStockUid("");
     }
 
+    const handleOpenSellWindow = (uid) => {
+        setisSellWindowOpen(!isSellWindowOpen);
+        setselectedStockUid(uid);
+    }
+
+    const handleCloseSellWindow = () => {
+        setisSellWindowOpen(false);
+        setselectedStockUid("");
+    }
+
+
+
     return (
         <GeneralContext.Provider value={{
             openBuyWindow:handleOpenBuyWindow,
@@ -44,10 +63,15 @@ const GeneralProvider = ({children}) => {
             availableMargin:availableMargin,
             setavailableMargin:setavailableMargin,
             setusedMargin:setusedMargin,
-            usedMargin:usedMargin
+            usedMargin:usedMargin,
+            openSellWindow:handleOpenSellWindow,
+            closeSellWindow:handleCloseSellWindow,
+            list:list,
+            setlist:setlist
         }}>
             {children}
             {isBuyWindowOpen && <BuyActionWindow uid={selectedStockUid}/>}
+            {isSellWindowOpen && <SellActionWindow uid={selectedStockUid}/>}
         </GeneralContext.Provider>
     )
 }

@@ -1,8 +1,57 @@
 import React from 'react'
-import { watchlist } from '../data.js'
 import WatchList from './WatchList.jsx'
+import { useContext, useEffect } from 'react'
+import { GeneralContext } from './GeneralContext.jsx'
+
 
 const LeftSection = () => {
+
+    const { list, setlist } = useContext(GeneralContext);
+
+    function pickRandomIndices(length, count = 2) {
+        const indices = new Set();
+
+        while (indices.size < count) {
+            indices.add(Math.floor(Math.random() * length));
+        }
+
+        return [...indices];
+    }
+
+    function randomFluctuation(price, maxPercent = 0.3) {
+        const changePercent =
+            (Math.random() * maxPercent * 2 - maxPercent) / 100;
+
+        return Number((price + price * changePercent).toFixed(2));
+    }
+
+    useEffect(() => {
+        const id = setInterval(() => {
+            setlist(prev => {
+                const count = Math.random() > 0.6 ? 2 : 1; // 1 or 2 stocks
+                const randomIndices = pickRandomIndices(prev.length, count);
+
+                return prev.map((stock, index) => {
+                    if (!randomIndices.includes(index)) return stock;
+
+                    const newPrice = randomFluctuation(stock.price);
+
+                    return {
+                        ...stock,
+                        price: newPrice,
+                        percent: Number(
+                            (((newPrice - stock.prevClose) / stock.prevClose) * 100).toFixed(2)
+                        ),
+                        isDown: newPrice < stock.prevClose
+                    };
+                });
+            });
+        }, 4000);
+
+        return () => clearInterval(id);
+    }, []);
+
+
     return (
         <div className='border text-center border-gray-300 h-full'>
             <div className='grid px-3 py-5 grid-cols-2'>
@@ -27,13 +76,13 @@ const LeftSection = () => {
                 />
 
                 <span className="text-sm text-gray-500 whitespace-nowrap">
-                    {watchlist.length} / 50
+                    {list.length} / 50
                 </span>
             </div>
 
             <div>
                 {
-                    watchlist.map((stock, index) => {
+                    list.map((stock, index) => {
                         return (
                             <WatchList key={index} stock={stock} index={index} />
                         )
