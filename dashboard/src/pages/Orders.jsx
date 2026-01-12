@@ -19,7 +19,8 @@ const OrdersSkeleton = () => {
 }
 
 const Orders = () => {
-  const { availableBalance, availableMargin } = useContext(GeneralContext);
+
+  const { availableBalance, availableMargin, seterror } = useContext(GeneralContext);
   const [orders, setOrders] = useState([]);
   const [loading, setloading] = useState(true);
 
@@ -35,6 +36,7 @@ const Orders = () => {
         }
       } catch (err) {
         console.log(err);
+        seterror(error.message || "Something went wrong");
       }finally{
         setloading(false);
       }

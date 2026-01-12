@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { NavLink } from "react-router-dom";
 import axios from "axios";
+import { GeneralContext } from "./GeneralContext";
 
 const Navbar = () => {
   const [drop, setDrop] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const {seterror} = useContext(GeneralContext);
 
   async function handleLogOut() {
     try {
@@ -16,6 +18,7 @@ const Navbar = () => {
       if (logOut.data?.status) window.location.reload();
     } catch (error) {
       console.log(error);
+      seterror(error.message || "Something went wrong");
     }
   }
 

@@ -3,6 +3,7 @@ import React, {useState} from "react";
 import BuyActionWindow from "./BuyActionWindow";
 import SellActionWindow from "./SellActionWindow";
 import { watchlist } from "../data";
+import ErrorToast from "./ErrorToast";
 
 export const GeneralContext = React.createContext({
     openBuyWindow: () => {},
@@ -31,6 +32,7 @@ const GeneralProvider = ({children}) => {
     const [usedMargin, setusedMargin] = useState(0);
     const [availableMargin, setavailableMargin] = useState(0);
     const [list, setlist] = useState(watchlist);
+    const [error, seterror] = useState(null);
 
     const handleOpenBuyWindow = (uid) => {
         setisBuyWindowOpen(!isBuyWindowOpen);
@@ -67,11 +69,14 @@ const GeneralProvider = ({children}) => {
             openSellWindow:handleOpenSellWindow,
             closeSellWindow:handleCloseSellWindow,
             list:list,
-            setlist:setlist
+            setlist:setlist,
+            error:error,
+            seterror:seterror
         }}>
             {children}
             {isBuyWindowOpen && <BuyActionWindow uid={selectedStockUid}/>}
             {isSellWindowOpen && <SellActionWindow uid={selectedStockUid}/>}
+            {error !== null && <ErrorToast/>}
         </GeneralContext.Provider>
     )
 }

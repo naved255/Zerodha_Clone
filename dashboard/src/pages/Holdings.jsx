@@ -7,7 +7,7 @@ import { GeneralContext } from './GeneralContext';
 const Holdings = () => {
   const [holdings, setHoldings] = useState([]);
 
-  const { list, setlist } = useContext(GeneralContext);
+  const { list, setlist, seterror } = useContext(GeneralContext);
 
   const getColor = (value) => {
     if (value > 0) return 'text-green-600'
@@ -24,11 +24,16 @@ const Holdings = () => {
 
   useEffect(() => {
     async function fetchHoldings() {
-      const res = await axios.get(
-        'https://zerodha-backend-tvro.onrender.com/allHoldings',
-        { withCredentials: true }
-      )
-      setHoldings(res.data)
+      try {
+        const res = await axios.get(
+          'https://zerodha-backend-tvro.onrender.com/allHoldings',
+          { withCredentials: true }
+        )
+        setHoldings(res.data)
+      } catch (error) {
+        console.log(error);
+        seterror(error.message || "Something went wrong");
+      }
 
 
     }

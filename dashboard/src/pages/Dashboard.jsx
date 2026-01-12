@@ -4,6 +4,7 @@ import Login from "./Login";
 import { GeneralContext } from "./GeneralContext";
 
 const Dashboard = () => {
+
   const {
     availableMargin,
     usedMargin,
@@ -12,18 +13,19 @@ const Dashboard = () => {
     setusedMargin,
     setavailableMargin,
     list,
-    setlist
+    setlist,
+    seterror
   } = useContext(GeneralContext);
 
 
-    const priceFunction = (stockName) => {
-      const stock = list.find(
-        item => item.name.toLowerCase() === stockName.toLowerCase()
-      );
-      return stock ? { price: stock.price, prevClose: stock.prevClose } : { price: 0, prevClose: 0 };
-    };
+  const priceFunction = (stockName) => {
+    const stock = list.find(
+      item => item.name.toLowerCase() === stockName.toLowerCase()
+    );
+    return stock ? { price: stock.price, prevClose: stock.prevClose } : { price: 0, prevClose: 0 };
+  };
 
-  const [auth, setAuth] = useState(null);
+  const [loading, setloading] = useState(false);
   const [hold, setHold] = useState({
     count: 0,
     currVal: 0,
@@ -68,11 +70,12 @@ const Dashboard = () => {
   useEffect(() => {
     async function checkAuth() {
       try {
+        setloading(true);
         const verifyRes = await axios.get("https://zerodha-backend-tvro.onrender.com/verify", {
           withCredentials: true,
         });
 
-        setAuth(verifyRes.data.status);
+
 
         const dashboardRes = await axios.get(
           "https://zerodha-backend-tvro.onrender.com/dashboard",
@@ -87,22 +90,38 @@ const Dashboard = () => {
         setHold(setHolding(holdingsRes.data));
 
         const fund = dashboardRes.data.fund;
+        if (!fund) {
+          throw new Error("Fund is not defined");
+        }
+        if (
+          fund.openingBalance == null ||
+          fund.usedMargin == null ||
+          fund.availableMargin == null
+        ) {
+          throw new Error("One or more fund fields are missing");
+        }
+
         setavailableBalance(fund.openingBalance);
         setusedMargin(fund.usedMargin);
         setavailableMargin(fund.availableMargin);
       } catch (err) {
-        console.error(err);
-        setAuth(false);
+        setloading(false);
+        console.log("error triger", err);
+        seterror(err.message || "something went wrong");
+
+      } finally {
+        setloading(false)
       }
     }
 
     checkAuth();
   }, []);
 
-  /* ---------------- Auth ---------------- */
-
-  if (auth === null) return <p className="p-6">Checking authentication...</p>;
-  if (auth === false) return <Login />;
+  if (loading === true) {
+    return (
+      <div className="w-full h-[77vh] flex items-center justify-center">loading...</div>
+    )
+  }
 
   /* ---------------- UI ---------------- */
 

@@ -7,7 +7,7 @@ import { NavLink } from 'react-router-dom'
 
 const BuyActionWindow = ({ uid }) => {
 
-  const { setusedMargin, setavailableMargin, availableMargin, availableBalance } = useContext(GeneralContext);
+  const { setusedMargin, setavailableMargin, availableMargin, availableBalance, error, seterror } = useContext(GeneralContext);
   const { openBuyWindow, closeBuyWindow } = useContext(GeneralContext);
   const [stockQuantity, setstockQuantity] = useState(1);
   const [stockPrice, setstockPrice] = useState(0);
@@ -71,13 +71,13 @@ const BuyActionWindow = ({ uid }) => {
       );
 
       if (order.data?.lowBalance) {
-        alert("Your balance is low")
-        return
+        throw new Error("Your balance is low")
+        
       }
 
       if (order.data?.lowMargin) {
-        alert("Your margine is low");
-        return;
+        throw new Error("Your margin is low");
+       
       }
 
       setusedMargin(order.data?.usedMargin);
@@ -88,7 +88,8 @@ const BuyActionWindow = ({ uid }) => {
     } catch (error) {
       console.log(error.response?.data || error.message);
       setplaceOrder(false);
-      alert("Order failed or insufficient margin");
+      seterror(error.message || "Something went wrong");
+      
     }finally{
       setplaceOrder(false);
     }

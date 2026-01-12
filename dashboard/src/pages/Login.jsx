@@ -1,12 +1,15 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { GeneralContext } from "./GeneralContext";
 
 
-const Login = ({auth, setAuth}) => {
+const Login = ({ auth, setAuth }) => {
 
     const navigate = useNavigate();
+
+    const { seterror } = useContext(GeneralContext);
 
     const [form, setForm] = useState({
         email: "",
@@ -31,10 +34,15 @@ const Login = ({auth, setAuth}) => {
                 console.log("inner")
                 setAuth(true);
                 navigate("/");
+            } else {
+                setError(res.data.message);
             }
-            
+
+
+
         } catch (err) {
             setError(err.response?.data?.message || "Login failed");
+            seterror(error.message || "Something went wrong");
         }
 
         setForm({

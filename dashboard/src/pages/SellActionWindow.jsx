@@ -6,7 +6,7 @@ import axios from 'axios'
 
 const SellActionWindow = ({ uid }) => {
 
-    const { openSellWindow, closeSellWindow, list , setlist } = useContext(GeneralContext);
+    const { openSellWindow, closeSellWindow, list , setlist, seterror } = useContext(GeneralContext);
     const [stockQuantity, setstockQuantity] = useState(1);
     const [product, setproduct] = useState("CNC");
 
@@ -37,7 +37,7 @@ const SellActionWindow = ({ uid }) => {
 
         } catch (error) {
             console.log(error.response?.data || error.message);
-            alert("Order failed or insufficient margin");
+           seterror(error.message || "Something went wrong");
         }
     };
 
