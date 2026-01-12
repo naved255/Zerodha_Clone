@@ -153,7 +153,7 @@ const Signup = () => {
                 <p className="text-center text-sm text-gray-600 mt-6">
                     Already have an account?{" "}
                     <NavLink
-                        to="/login"
+                        to="https://dashboard-pi-khaki-74.vercel.app/"
                         className="text-blue-600 hover:underline"
                     >
                         Login
