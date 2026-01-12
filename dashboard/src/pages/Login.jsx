@@ -102,7 +102,7 @@ const Login = ({ auth, setAuth }) => {
                     Login
                 </button>
 
-                <Link className="text-blue-500 text-xs py-1.5" to={"https://zerodha-clone-2kp7wh131-naveds-projects-8f831a9a.vercel.app"}>Create account</Link>
+                <Link className="text-blue-500 text-xs py-1.5" to={"https://zerodha-clone-six-sooty.vercel.app/"}>Create account</Link>
             </form>
         </div>
     );
